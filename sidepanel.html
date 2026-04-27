@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>i know</title>
+  <link rel="stylesheet" href="styles/shared.css">
+  <link rel="stylesheet" href="styles/sidepanel.css">
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────── -->
+<header class="sp-header">
+  <span class="sp-logo">i know</span>
+  <div class="sp-header-actions">
+    <button class="sp-save-btn" id="spBtnObsidian" title="保存当前页到 Obsidian 收集箱">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <line x1="9" y1="15" x2="15" y2="15"/>
+      </svg>
+      存 Obsidian
+    </button>
+    <button class="sp-batch-btn" id="spBtnBatch" title="批量导出到 Obsidian">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- Obsidian Setup Panel (hidden) -->
+<div class="sp-obsidian-setup" id="obsidianSetupPanel" style="display:none">
+  <div class="sp-setup-title">⚙️ 首次配置 Obsidian</div>
+  <p style="font-size:11px;color:#9a918a;margin:0 0 10px">需安装 Obsidian 社区插件「<strong>Local REST API</strong>」</p>
+  <input class="sp-setup-input" id="setupVaultName" placeholder="Vault 名称 (如 My Vault)">
+  <input class="sp-setup-input" id="setupInboxFolder" placeholder="收集箱路径 (默认 inbox)" value="inbox">
+  <input class="sp-setup-input" id="setupApiKey" placeholder="REST API Key (可选)">
+  <div style="display:flex;gap:6px;margin-top:8px">
+    <button class="sp-setup-btn primary" id="btnSetupSave">保存并继续</button>
+    <button class="sp-setup-btn" id="btnSetupSkip">跳过</button>
+  </div>
+</div>
+
+<!-- Batch Toolbar (hidden) -->
+<div class="sp-batch-toolbar" id="batchToolbar" style="display:none">
+  <label class="sp-batch-select-all">
+    <input type="checkbox" id="batchSelectAll"> 全选
+  </label>
+  <span class="sp-batch-count" id="batchCount">已选 0 项</span>
+  <button class="sp-batch-export" id="btnBatchExport">📤 批量存 Obsidian</button>
+  <button class="sp-batch-cancel" id="btnBatchCancel">取消</button>
+</div>
+
+<!-- ── Tab Nav ────────────────────────────────────────────── -->
+<nav class="sp-tabs">
+  <button class="sp-tab active" data-tab="prompts">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    提示词
+  </button>
+  <button class="sp-tab" data-tab="readlater">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    待阅读
+    <span class="sp-badge" id="readLaterBadge"></span>
+  </button>
+  <button class="sp-tab" data-tab="favorites">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    收藏夹
+  </button>
+</nav>
+
+<!-- ── Prompts Panel ───────────────────────────────────────── -->
+<section class="sp-panel active" id="panelPrompts">
+  <div class="sp-filter-row">
+    <button class="sp-filter active" data-subtype="all">全部</button>
+    <button class="sp-filter" data-subtype="image_prompt">图片</button>
+    <button class="sp-filter" data-subtype="article_prompt">文章</button>
+    <button class="sp-filter" data-subtype="other_prompt">通用</button>
+  </div>
+  <div class="sp-search-row">
+    <input class="sp-search" id="promptSearch" type="text" placeholder="搜索提示词...">
+  </div>
+  <div class="sp-list" id="promptList">
+    <div class="sp-empty">暂无提示词<br><small>在浮窗中点「存提示词」添加</small></div>
+  </div>
+</section>
+
+<!-- ── Read Later Panel ───────────────────────────────────── -->
+<section class="sp-panel" id="panelReadlater">
+  <div class="sp-list" id="readLaterList">
+    <div class="sp-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      收件箱清零 🎉
+    </div>
+  </div>
+</section>
+
+<!-- ── Favorites Panel ────────────────────────────────────── -->
+<section class="sp-panel" id="panelFavorites">
+  <div class="sp-list" id="favoritesList">
+    <div class="sp-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      还没有收藏<br><small>在知识库中点 ★ 收藏</small>
+    </div>
+  </div>
+</section>
+
+<!-- ── Toast ──────────────────────────────────────────────── -->
+<div id="spToast"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/obsidian.js"></script>
+<script src="js/sidepanel.js"></script>
+</body>
+</html>

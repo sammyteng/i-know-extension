@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "i know",
+  "version": "1.0.0",
+  "description": "你的浏览器知识中枢 — 采集、管理、导出知识到 Obsidian",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage",
+    "sidePanel",
+    "contextMenus",
+    "scripting",
+    "downloads"
+  ],
+  "host_permissions": ["<all_urls>", "http://localhost/*", "http://127.0.0.1/*"],
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content-widget.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "i know",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

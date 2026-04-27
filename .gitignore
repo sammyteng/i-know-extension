@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# macOS
+.DS_Store
+._*
+__MACOSX/
+
+# Build artifacts
+*.zip
+*.crx
+*.pem
+
+# IDE
+.vscode/
+.idea/
+
+# Debug
+debug.html
+
+# Misc
+*.log
+package*.json

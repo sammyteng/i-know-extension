@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>i know</title>
+  <link rel="stylesheet" href="styles/shared.css">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div class="container" id="appContainer">
+
+  <!-- ════════════════════════════════════════════════════════
+       HEADER
+       ════════════════════════════════════════════════════════ -->
+  <header>
+    <div class="header-left">
+      <h1 id="greeting"></h1>
+      <div class="date" id="dateDisplay"></div>
+    </div>
+    <div class="header-right">
+      <!-- Stats -->
+      <div class="header-stats" id="headerStats">
+        <div class="hstat">
+          <span class="hstat-num" id="statTabs">—</span>
+          <span class="hstat-label">标签页</span>
+        </div>
+        <div class="hstat-divider"></div>
+        <div class="hstat">
+          <span class="hstat-num" id="statKnowledge">—</span>
+          <span class="hstat-label">知识条目</span>
+        </div>
+        <div class="hstat-divider"></div>
+        <div class="hstat">
+          <span class="hstat-num" id="statReadLater">—</span>
+          <span class="hstat-label">稍后读</span>
+        </div>
+      </div>
+      <!-- Nav pills -->
+      <nav class="header-nav">
+        <button class="nav-pill active" data-view="tabs">标签页</button>
+        <button class="nav-pill" data-view="knowledge">知识库</button>
+        <button class="nav-pill" data-view="readlater">稍后读</button>
+        <button class="nav-pill" data-view="favorites">收藏夹</button>
+      </nav>
+      <!-- Settings -->
+      <button class="icon-btn" id="btnSettings" title="设置">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════════════════════
+       TAB OUT DUPE BANNER
+       ════════════════════════════════════════════════════════ -->
+  <div class="tab-cleanup-banner" id="tabOutDupeBanner" style="display:none">
+    <div class="tab-cleanup-left">
+      <div class="tab-cleanup-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+        </svg>
+      </div>
+      <div class="tab-cleanup-text">
+        你有 <strong id="tabOutDupeCount"></strong> 个重复的新标签页，只保留这一个？
+      </div>
+    </div>
+    <button class="action-btn amber" data-action="close-tabout-dupes">关闭多余</button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       VIEWS
+       ════════════════════════════════════════════════════════ -->
+
+  <!-- ── VIEW: Tabs (primary, like tab-out) ── -->
+  <div class="view active" id="viewTabs">
+
+    <!-- Quick Sites -->
+    <div class="quick-sites-section" id="quickSitesSection">
+      <div class="quick-sites-header">
+        <span class="quick-sites-title">常用网站</span>
+        <button class="quick-sites-edit-btn" id="btnEditQuickSites" title="编辑">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+        </button>
+      </div>
+      <div class="quick-sites-grid" id="quickSitesGrid"></div>
+      <!-- Add site inline form (hidden by default) -->
+      <div class="quick-sites-add" id="quickSitesAdd" style="display:none">
+        <input type="text" class="form-input" id="addSiteUrl" placeholder="网址 https://...">
+        <input type="text" class="form-input" id="addSiteName" placeholder="名称（可选）">
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button class="action-btn primary" id="btnAddSiteConfirm" style="font-size:11px;padding:4px 14px">添加</button>
+          <button class="action-btn" id="btnAddSiteCancel" style="font-size:11px;padding:4px 10px">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-columns" id="dashboardColumns">
+
+      <!-- Left: Open tabs -->
+      <div class="active-section" id="openTabsSection" style="display:none">
+        <div class="section-header">
+          <h2 id="openTabsSectionTitle">Right now</h2>
+          <div class="section-line"></div>
+          <div class="section-count" id="openTabsSectionCount"></div>
+        </div>
+        <div class="missions" id="openTabsMissions"></div>
+      </div>
+
+      <!-- Right: Saved for later (deferred) -->
+      <div class="deferred-column" id="deferredColumn" style="display:none">
+        <div class="section-header">
+          <h2>Saved for later</h2>
+          <div class="section-line"></div>
+          <div class="section-count" id="deferredCount"></div>
+        </div>
+        <div class="deferred-list" id="deferredList"></div>
+        <div class="deferred-empty" id="deferredEmpty" style="display:none">Nothing saved. Living in the moment.</div>
+        <div class="deferred-archive" id="deferredArchive" style="display:none">
+          <div class="archive-header">
+            <button class="archive-toggle" id="archiveToggle">
+              <svg class="archive-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+              Archive
+              <span class="archive-count" id="archiveCount"></span>
+            </button>
+            <button class="archive-clear-btn" id="archiveClearAll" title="清空 Archive">清空</button>
+          </div>
+          <div class="archive-body" id="archiveBody" style="display:none">
+            <input type="text" class="archive-search" id="archiveSearch" placeholder="Search archived tabs...">
+            <div class="archive-list" id="archiveList"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── VIEW: Knowledge Base ── -->
+  <div class="view" id="viewKnowledge">
+    <div class="kb-toolbar">
+      <div class="kb-filters" id="kbFilters">
+        <!-- dynamically generated by renderKbFilters() -->
+      </div>
+      <div class="kb-actions">
+        <div class="search-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" class="search-input" id="kbSearch" placeholder="搜索知识...">
+        </div>
+        <button class="action-btn" id="btnNewItem">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          新建
+        </button>
+        <button class="action-btn" id="btnExportAll">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          导出
+        </button>
+      </div>
+    </div>
+    <div class="kb-grid" id="kbGrid"></div>
+  </div>
+
+
+  <!-- ── VIEW: Favorites ── -->
+  <div class="view" id="viewFavorites">
+    <div class="kb-toolbar">
+      <div class="kb-filters" id="favFilters">
+        <button class="kb-filter active" data-filter="all">全部收藏</button>
+        <button class="kb-filter" data-filter="prompt">提示词</button>
+        <button class="kb-filter" data-filter="link">链接</button>
+        <button class="kb-filter" data-filter="article">文章</button>
+      </div>
+      <div class="kb-actions">
+        <div class="search-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" class="search-input" id="favSearch" placeholder="搜索收藏...">
+        </div>
+      </div>
+    </div>
+    <div class="kb-grid" id="favoritesGrid"></div>
+  </div>
+
+  <!-- ── VIEW: Read Later ── -->
+  <div class="view" id="viewReadlater">
+    <div class="kb-toolbar">
+      <div class="kb-filters">
+        <button class="kb-filter active" data-filter="all">全部</button>
+        <button class="kb-filter" data-filter="prompt">提示词</button>
+        <button class="kb-filter" data-filter="skill">Skill</button>
+        <button class="kb-filter" data-filter="article">文章</button>
+        <button class="kb-filter" data-filter="link">链接</button>
+      </div>
+      <div class="kb-actions">
+        <button class="action-btn" id="btnMarkAllRead">全部已读</button>
+      </div>
+    </div>
+    <div class="readlater-list" id="readLaterList"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       FOOTER
+       ════════════════════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-stats">
+      <div class="stat">
+        <div class="stat-num" id="footerStatTabs">—</div>
+        <div class="stat-label">Open tabs</div>
+      </div>
+    </div>
+    <div class="last-refresh">
+      <span style="color:var(--muted);font-size:11px">
+        🧠 <strong>i know</strong> · based on <a href="https://github.com/zarazhangrui/tab-out" target="_top" style="color:var(--muted);text-decoration:underline;text-underline-offset:2px">tab-out</a>
+      </span>
+    </div>
+  </footer>
+
+</div><!-- end .container -->
+
+<!-- ════════════════════════════════════════════════════════
+     TOAST
+     ════════════════════════════════════════════════════════ -->
+<div class="toast" id="toast">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+  </svg>
+  <span id="toastText"></span>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     MODALS
+     ════════════════════════════════════════════════════════ -->
+
+<!-- Save / Edit modal -->
+<div class="modal-overlay" id="modalSave">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalSaveTitle">保存知识</h2>
+      <button class="modal-close-btn modal-close" data-modal="modalSave">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <label>标题</label>
+      <input type="text" class="form-input" id="saveTitle" placeholder="知识标题">
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="flex:1">
+        <label>类型</label>
+        <select class="form-select" id="saveType">
+          <option value="prompt">提示词</option>
+          <option value="skill">Skill</option>
+          <option value="article">文章</option>
+          <option value="screenshot">截图</option>
+          <option value="link">链接</option>
+        </select>
+      </div>
+      <div class="form-group" id="subTypeGroup" style="flex:1">
+        <label>子分类</label>
+        <select class="form-select" id="saveSubType">
+          <option value="image_prompt">🖼 图片提示词</option>
+          <option value="article_prompt">📄 文章提示词</option>
+          <option value="other_prompt">🔧 其他提示词</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>内容</label>
+      <textarea class="form-textarea" id="saveContent" placeholder="粘贴或输入内容..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>标签（逗号分隔）</label>
+      <input type="text" class="form-input" id="saveTags" placeholder="AI, 写作, Midjourney...">
+    </div>
+    <label class="form-checkbox-label" style="margin-bottom:4px">
+      <input type="checkbox" id="saveReadLater">
+      <span>加入稍后阅读</span>
+    </label>
+    <div class="modal-footer">
+      <button class="action-btn modal-close" data-modal="modalSave">取消</button>
+      <button class="action-btn primary" id="btnSaveConfirm">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail modal -->
+<div class="modal-overlay" id="modalDetail">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2 id="detailTitle" style="font-size:18px;line-height:1.4"></h2>
+      <button class="modal-close-btn modal-close" data-modal="modalDetail">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="detail-meta" id="detailMeta"></div>
+    <div class="detail-content" id="detailContent"></div>
+    <div class="detail-images" id="detailImages"></div>
+    <div class="modal-footer">
+      <button class="action-btn" id="btnCopyContent">复制内容</button>
+      <button class="action-btn sage" id="btnDetailObsidian">→ Obsidian</button>
+      <button class="action-btn" id="btnDetailEdit">编辑</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="modalSettings">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>设置</h2>
+      <button class="modal-close-btn modal-close" data-modal="modalSettings">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Obsidian 集成</div>
+      <div class="form-group">
+        <label>Vault 名称</label>
+        <input type="text" class="form-input" id="settingVaultName" placeholder="My Vault">
+      </div>
+      <div class="form-group">
+        <label>Inbox 文件夹路径</label>
+        <input type="text" class="form-input" id="settingInboxFolder" placeholder="inbox">
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;justify-content:space-between">
+          <span>Local REST API Key <span style="font-weight:400;color:var(--muted)">（可选）</span></span>
+          <button id="btnCheckRestApi" class="action-btn" style="font-size:10px;padding:3px 10px">检测插件</button>
+        </label>
+        <input type="password" class="form-input" id="settingRestApiKey" placeholder="不填则无验证">
+        <div id="restApiStatus" style="font-size:11px;color:var(--muted);margin-top:5px"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5">
+          安装 Obsidian 社区插件「<strong>Local REST API</strong>」可实现<strong>完全无弹窗保存</strong>，否则使用 obsidian:// 协议
+        </div>
+      </div>
+      <label class="form-checkbox-label">
+        <input type="checkbox" id="settingObsidianSilent" checked>
+        <span>obsidian:// 静默模式（保存时不弹出 Obsidian 窗口）</span>
+      </label>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Gemini AI</div>
+      <div class="form-group">
+        <label>API Key</label>
+        <input type="password" class="form-input" id="settingGeminiKey" placeholder="AIza...">
+      </div>
+      <label class="form-checkbox-label">
+        <input type="checkbox" id="settingAutoSummary">
+        <span>保存时自动生成摘要</span>
+      </label>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">浮窗与菜单</div>
+      <label class="form-checkbox-label" style="margin-bottom:8px">
+        <input type="checkbox" id="settingFloatingBtn">
+        <span>显示右下角浮窗按钮</span>
+      </label>
+      <label class="form-checkbox-label">
+        <input type="checkbox" id="settingSelectionMenu">
+        <span>选中文本弹出快捷菜单</span>
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="action-btn modal-close" data-modal="modalSettings">取消</button>
+      <button class="action-btn primary" id="btnSaveSettings">保存设置</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import file input (hidden) -->
+<input type="file" id="importFileInput" accept=".json" style="display:none">
+
+<!-- Scripts -->
+<script src="js/storage.js"></script>
+<script src="js/tabs.js"></script>
+<script src="js/obsidian.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
