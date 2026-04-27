@@ -122,6 +122,18 @@ extension/
 
 ---
 
+## 🙏 致谢
+
+本项目基于 [**tab-out**](https://github.com/zarazhangrui/tab-out) 改造开发，感谢原作者 [@zarazhangrui](https://github.com/zarazhangrui) 提供的优秀标签管理基础架构。
+
+> tab-out — *Keep tabs on your tabs. Turn your "New tabs" page into a mission control.*
+
+在 tab-out 的标签页管理和新标签页仪表盘基础上，i know 扩展了知识采集、提示词管理、分类标签、Obsidian 集成等能力，将其从标签管理工具进化为完整的浏览器知识中枢。
+
+---
+
 ## 📜 License
 
 MIT © [sammyteng](https://github.com/sammyteng)
+
+基于 [tab-out](https://github.com/zarazhangrui/tab-out)（MIT License © zarazhangrui）
