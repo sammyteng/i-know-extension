@@ -656,8 +656,11 @@ async function handleSelectionAction(action, text, btnEl = null) {
         btnEl.disabled = true;
       }
       const cfg = await getSettingsSafe();
-      if (!cfg.geminiApiKey) {
-        showMiniToast('✗ 请先在设置中配置 Gemini API Key');
+      const apiKey = cfg.aiApiKey || cfg.geminiApiKey;
+      const provider = cfg.aiProvider || 'gemini';
+      
+      if (!apiKey) {
+        showMiniToast('✗ 请先在设置中配置 AI 翻译模型 API Key');
         if (btnEl) {
           btnEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg><span>翻译</span>`;
           btnEl.disabled = false;
@@ -665,7 +668,7 @@ async function handleSelectionAction(action, text, btnEl = null) {
         return;
       }
       try {
-        const res = await chrome.runtime.sendMessage({ type: 'TRANSLATE', text, apiKey: cfg.geminiApiKey });
+        const res = await chrome.runtime.sendMessage({ type: 'TRANSLATE', text, apiKey, provider });
         if (res?.success) {
           if (selectionMenuEl) {
             // Check if there is an existing translation result box, if so replace it

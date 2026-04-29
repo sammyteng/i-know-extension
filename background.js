@@ -207,31 +207,75 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true; // async
   }
 
-  // ── Translate using Gemini API ─────────────────────────────────
+  // ── Translate using Multiple AI Models ─────────────────────────
   if (msg.type === 'TRANSLATE') {
     (async () => {
-      const { text, apiKey } = msg;
+      const { text, apiKey, provider = 'gemini' } = msg;
       if (!apiKey) {
-        sendResponse({ success: false, error: '未配置 Gemini API Key' });
+        sendResponse({ success: false, error: '未配置 API Key' });
         return;
       }
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
         const prompt = `Translate the following text to simplified Chinese. Only output the translated text without any explanation, markdown formatting, or quotes:\n\n${text}`;
+        let url = '';
+        let body = {};
+        let headers = { 'Content-Type': 'application/json' };
         
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        if (provider === 'gemini') {
+          url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+          body = {
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: { temperature: 0.3 }
-          }),
+          };
+        } else if (provider === 'deepseek') {
+          url = 'https://api.deepseek.com/chat/completions';
+          headers['Authorization'] = `Bearer ${apiKey}`;
+          body = {
+            model: 'deepseek-chat',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.3
+          };
+        } else if (provider === 'claude') {
+          url = 'https://api.anthropic.com/v1/messages';
+          headers['x-api-key'] = apiKey;
+          headers['anthropic-version'] = '2023-06-01';
+          headers['anthropic-dangerously-allow-browser'] = 'true';
+          body = {
+            model: 'claude-3-5-haiku-latest',
+            max_tokens: 1024,
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.3
+          };
+        } else if (provider === 'qwen') {
+          url = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+          headers['Authorization'] = `Bearer ${apiKey}`;
+          body = {
+            model: 'qwen-turbo',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.3
+          };
+        } else {
+          throw new Error('不支持的 AI 模型');
+        }
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(body),
           signal: AbortSignal.timeout(10000)
         });
         
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const translatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        let translatedText = '';
+        if (provider === 'gemini') {
+          translatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        } else if (['deepseek', 'qwen'].includes(provider)) {
+          translatedText = data.choices?.[0]?.message?.content;
+        } else if (provider === 'claude') {
+          translatedText = data.content?.[0]?.text;
+        }
         
         if (translatedText) {
           sendResponse({ success: true, text: translatedText.trim() });

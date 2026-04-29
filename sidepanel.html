@@ -65,6 +65,9 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     收藏夹
   </button>
+  <button class="sp-tab" data-tab="settings" style="margin-left:auto">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
 </nav>
 
 <!-- ── Prompts Panel ───────────────────────────────────────── -->
@@ -100,6 +103,21 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       还没有收藏<br><small>在知识库中点 ★ 收藏</small>
     </div>
+  </div>
+</section>
+
+<!-- ── Settings Panel ─────────────────────────────────────── -->
+<section class="sp-panel" id="panelSettings">
+  <div class="sp-settings-group">
+    <div class="sp-settings-title">🌍 划词翻译 AI 模型</div>
+    <select class="sp-setup-input" id="settingAiProvider" style="margin-bottom:8px">
+      <option value="gemini">Google Gemini</option>
+      <option value="deepseek">DeepSeek</option>
+      <option value="claude">Anthropic Claude</option>
+      <option value="qwen">阿里通义千问 (Qwen)</option>
+    </select>
+    <input type="password" class="sp-setup-input" id="settingAiKey" placeholder="输入 API Key">
+    <button class="sp-setup-btn primary" id="btnSaveAiSettings" style="margin-top:8px;width:100%">保存 AI 配置</button>
   </div>
 </section>
 

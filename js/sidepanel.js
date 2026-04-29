@@ -18,6 +18,7 @@ let promptSearch = '';
   setupPromptFilters();
   setupSearch();
   setupObsidianBtn();
+  setupSettings();
   await loadAll();
 
   // Listen for storage changes
@@ -518,4 +519,49 @@ function toast(msg) {
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── Settings ──────────────────────────────────────────────────
+function setupSettings() {
+  const providerSelect = document.getElementById('settingAiProvider');
+  const keyInput = document.getElementById('settingAiKey');
+  const saveBtn = document.getElementById('btnSaveAiSettings');
+
+  // Load existing settings
+  chrome.storage.local.get('iknow_settings').then(res => {
+    const s = res.iknow_settings || {};
+    if (s.aiProvider) providerSelect.value = s.aiProvider;
+    if (s.aiApiKey) keyInput.value = s.aiApiKey;
+    else if (s.geminiApiKey) {
+      keyInput.value = s.geminiApiKey; // fallback load
+      providerSelect.value = 'gemini';
+    }
+  });
+
+  saveBtn?.addEventListener('click', async () => {
+    const provider = providerSelect.value;
+    const apiKey = keyInput.value.trim();
+    
+    saveBtn.textContent = '保存中...';
+    saveBtn.disabled = true;
+
+    try {
+      const { iknow_settings: current = {} } = await chrome.storage.local.get('iknow_settings');
+      await chrome.storage.local.set({
+        iknow_settings: {
+          ...current,
+          aiProvider: provider,
+          aiApiKey: apiKey
+        }
+      });
+      toast('✓ AI 配置已保存');
+    } catch (e) {
+      toast('✗ 保存失败');
+    }
+
+    setTimeout(() => {
+      saveBtn.textContent = '保存 AI 配置';
+      saveBtn.disabled = false;
+    }, 600);
+  });
 }

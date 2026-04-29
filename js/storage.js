@@ -237,7 +237,9 @@ const IKnowStorage = (() => {
   const DEFAULT_SETTINGS = {
     obsidianVaultName: '',
     obsidianInboxFolder: 'inbox',
-    geminiApiKey: '',
+    geminiApiKey: '', // Legacy
+    aiProvider: 'gemini',
+    aiApiKey: '',
     theme: 'dark',
     floatingButtonEnabled: true,
     selectionMenuEnabled: true,
@@ -248,7 +250,14 @@ const IKnowStorage = (() => {
 
   async function getSettings() {
     const { [SETTINGS_KEY]: settings = {} } = await chrome.storage.local.get(SETTINGS_KEY);
-    return { ...DEFAULT_SETTINGS, ...settings };
+    const finalSettings = { ...DEFAULT_SETTINGS, ...settings };
+    
+    // Migrate legacy geminiApiKey to new aiApiKey format if empty
+    if (finalSettings.geminiApiKey && !finalSettings.aiApiKey && finalSettings.aiProvider === 'gemini') {
+      finalSettings.aiApiKey = finalSettings.geminiApiKey;
+    }
+    
+    return finalSettings;
   }
 
   async function updateSettings(updates) {

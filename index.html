@@ -339,10 +339,19 @@
       </label>
     </div>
     <div class="settings-section">
-      <div class="settings-section-title">Gemini AI</div>
+      <div class="settings-section-title">🌍 AI 模型（用于翻译等功能）</div>
+      <div class="form-group">
+        <label>模型提供商</label>
+        <select class="form-select" id="settingAiProvider">
+          <option value="gemini">Google Gemini</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="claude">Anthropic Claude</option>
+          <option value="qwen">阿里通义千问 (Qwen)</option>
+        </select>
+      </div>
       <div class="form-group">
         <label>API Key</label>
-        <input type="password" class="form-input" id="settingGeminiKey" placeholder="AIza...">
+        <input type="password" class="form-input" id="settingAiKey" placeholder="输入 API Key">
       </div>
       <label class="form-checkbox-label">
         <input type="checkbox" id="settingAutoSummary">

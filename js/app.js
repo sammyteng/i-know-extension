@@ -742,7 +742,8 @@ function setupSettings() {
     document.getElementById('settingInboxFolder').value    = s.obsidianInboxFolder   || 'inbox';
     document.getElementById('settingRestApiKey').value     = s.obsidianRestApiKey    || '';
     document.getElementById('settingObsidianSilent').checked = s.obsidianSilentMode !== false;
-    document.getElementById('settingGeminiKey').value      = s.geminiApiKey          || '';
+    document.getElementById('settingAiProvider').value     = s.aiProvider            || 'gemini';
+    document.getElementById('settingAiKey').value          = s.aiApiKey              || '';
     document.getElementById('settingAutoSummary').checked  = s.autoSummary           || false;
     document.getElementById('settingFloatingBtn').checked  = s.floatingButtonEnabled !== false;
     document.getElementById('settingSelectionMenu').checked= s.selectionMenuEnabled  !== false;
@@ -777,7 +778,8 @@ function setupSettings() {
       obsidianInboxFolder:    document.getElementById('settingInboxFolder').value.trim() || 'inbox',
       obsidianRestApiKey:     document.getElementById('settingRestApiKey').value.trim(),
       obsidianSilentMode:     document.getElementById('settingObsidianSilent').checked,
-      geminiApiKey:           document.getElementById('settingGeminiKey').value.trim(),
+      aiProvider:             document.getElementById('settingAiProvider').value,
+      aiApiKey:               document.getElementById('settingAiKey').value.trim(),
       autoSummary:            document.getElementById('settingAutoSummary').checked,
       floatingButtonEnabled:  document.getElementById('settingFloatingBtn').checked,
       selectionMenuEnabled:   document.getElementById('settingSelectionMenu').checked,

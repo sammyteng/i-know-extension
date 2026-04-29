@@ -481,3 +481,18 @@ a.sp-fav-title:hover { color: var(--amber); }
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ── Settings Panel ─────────────────────────────────────── */
+.sp-settings-group {
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 12px;
+}
+.sp-settings-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
