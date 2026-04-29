@@ -206,6 +206,44 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     })();
     return true; // async
   }
+
+  // ── Translate using Gemini API ─────────────────────────────────
+  if (msg.type === 'TRANSLATE') {
+    (async () => {
+      const { text, apiKey } = msg;
+      if (!apiKey) {
+        sendResponse({ success: false, error: '未配置 Gemini API Key' });
+        return;
+      }
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const prompt = `Translate the following text to simplified Chinese. Only output the translated text without any explanation, markdown formatting, or quotes:\n\n${text}`;
+        
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.3 }
+          }),
+          signal: AbortSignal.timeout(10000)
+        });
+        
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const translatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (translatedText) {
+          sendResponse({ success: true, text: translatedText.trim() });
+        } else {
+          sendResponse({ success: false, error: 'API 返回格式异常' });
+        }
+      } catch (e) {
+        sendResponse({ success: false, error: e.message });
+      }
+    })();
+    return true;
+  }
 });
 
 // ── Storage helper (same key as storage.js) ──────────────────

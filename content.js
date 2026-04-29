@@ -577,33 +577,66 @@ function showSelectionMenu(x, y, text) {
   selectionMenuEl.style.top  = clampY + 'px';
   const preview = text.length > 32 ? text.slice(0, 32) + '…' : text;
   selectionMenuEl.innerHTML = `
-    <div class="iknow-sel-preview" title="${escHtml(text)}">${escHtml(preview)}</div>
+    <div class="iknow-sel-preview" title="${escHtml(text)}" style="cursor: move;">${escHtml(preview)}</div>
     <div class="iknow-sel-actions">
       <button class="iknow-sel-btn" data-action="save-text">${ICON.save}<span>保存</span></button>
       <button class="iknow-sel-btn" data-action="save-prompt">${ICON.prompt}<span>提示词</span></button>
+      <button class="iknow-sel-btn" data-action="translate-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg><span>翻译</span></button>
       <button class="iknow-sel-btn" data-action="copy-text">${ICON.copy}<span>复制</span></button>
       <button class="iknow-sel-btn iknow-sel-obsidian" data-action="to-obsidian">${ICON.obsidian}<span>Obsidian</span></button>
     </div>
   `;
   document.body.appendChild(selectionMenuEl);
+  
+  // Make it draggable via the preview area
+  let isDragging = false;
+  let startX, startY, initialX, initialY;
+  const header = selectionMenuEl.querySelector('.iknow-sel-preview');
+  
+  header.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    initialX = selectionMenuEl.offsetLeft;
+    initialY = selectionMenuEl.offsetTop;
+    e.preventDefault(); // prevent text selection
+  });
+  
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    selectionMenuEl.style.left = (initialX + dx) + 'px';
+    selectionMenuEl.style.top = (initialY + dy) + 'px';
+  });
+  
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
   selectionMenuEl.querySelectorAll('.iknow-sel-btn').forEach(btn => {
     btn.addEventListener('mousedown', e => e.preventDefault());
     btn.addEventListener('click', async e => {
       e.stopPropagation();
-      btn.disabled = true;
-      btn.style.opacity = '0.6';
-      await handleSelectionAction(btn.dataset.action, text);
-      btn.innerHTML = `${ICON.check} <span>完成</span>`;
-      btn.style.opacity = '1';
-      btn.style.color = '#5a7a62';
-      setTimeout(() => hideSelectionMenu(), 1200);
+      const action = btn.dataset.action;
+      if (action !== 'translate-text') {
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+      }
+      await handleSelectionAction(action, text, btn);
+      if (action !== 'translate-text') {
+        btn.innerHTML = `${ICON.check} <span>完成</span>`;
+        btn.style.opacity = '1';
+        btn.style.color = '#5a7a62';
+        setTimeout(() => hideSelectionMenu(), 1200);
+      }
     });
   });
 }
 
 function hideSelectionMenu() { selectionMenuEl?.remove(); selectionMenuEl = null; }
 
-async function handleSelectionAction(action, text) {
+async function handleSelectionAction(action, text, btnEl = null) {
   switch (action) {
     case 'save-text': {
       hideSelectionMenu();
@@ -615,6 +648,45 @@ async function handleSelectionAction(action, text) {
       text.replace(/#([\w\u4e00-\u9fa5]+)/g, (_, t) => { tags.push(t); });
       const res = await saveItemSafe({ type: 'prompt', subType: 'other_prompt', title: text.replace(/\s+/g,' ').slice(0,30) + (text.length > 30 ? '...' : ''), content: text, sourceUrl: location.href, sourceDomain: location.hostname, tags });
       showMiniToast(res.success ? '✓ 提示词已保存' : '✗ 保存失败');
+      break;
+    }
+    case 'translate-text': {
+      if (btnEl) {
+        btnEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg><span>翻译中</span>`;
+        btnEl.disabled = true;
+      }
+      const cfg = await getSettingsSafe();
+      if (!cfg.geminiApiKey) {
+        showMiniToast('✗ 请先在设置中配置 Gemini API Key');
+        if (btnEl) {
+          btnEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg><span>翻译</span>`;
+          btnEl.disabled = false;
+        }
+        return;
+      }
+      try {
+        const res = await chrome.runtime.sendMessage({ type: 'TRANSLATE', text, apiKey: cfg.geminiApiKey });
+        if (res?.success) {
+          if (selectionMenuEl) {
+            // Check if there is an existing translation result box, if so replace it
+            let trBox = selectionMenuEl.querySelector('.iknow-sel-translation');
+            if (!trBox) {
+              trBox = document.createElement('div');
+              trBox.className = 'iknow-sel-translation';
+              selectionMenuEl.appendChild(trBox);
+            }
+            trBox.innerHTML = escHtml(res.text).replace(/\n/g, '<br>');
+          }
+        } else {
+          showMiniToast('✗ 翻译失败: ' + (res?.error || '未知错误'));
+        }
+      } catch (e) {
+        showMiniToast('✗ 翻译请求失败');
+      }
+      if (btnEl) {
+        btnEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg><span>翻译</span>`;
+        btnEl.disabled = false;
+      }
       break;
     }
     case 'copy-text': {

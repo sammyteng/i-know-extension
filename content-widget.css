@@ -175,6 +175,20 @@
 }
 .iknow-sel-obsidian:hover svg { stroke: #4a6952; }
 
+/* Translation result box */
+.iknow-sel-translation {
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3b3531;
+  border-top: 1px solid #f0ece6;
+  background: #fffdf9;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.iknow-sel-translation::-webkit-scrollbar { width: 4px; }
+.iknow-sel-translation::-webkit-scrollbar-thumb { background: #dcd3c8; border-radius: 4px; }
+
 /* ── Mini Toast ── */
 #iknow-mini-toast {
   position: fixed;
