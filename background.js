@@ -216,13 +216,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return;
       }
       try {
-        const prompt = `Translate the following text to simplified Chinese. Only output the translated text without any explanation, markdown formatting, or quotes:\n\n${text}`;
+        const prompt = `Please act as a professional translator. If the following text is mostly in English, translate it to Simplified Chinese. If it is mostly in Chinese, translate it to English. Output ONLY the translated text without any explanation, markdown formatting, or quotes:\n\n${text}`;
         let url = '';
         let body = {};
         let headers = { 'Content-Type': 'application/json' };
         
         if (provider === 'gemini') {
-          url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+          url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
           body = {
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: { temperature: 0.3 }

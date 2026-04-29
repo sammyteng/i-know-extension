@@ -132,26 +132,52 @@ const IKnowTabs = (() => {
     await chrome.windows.update(match.windowId, { focused: true });
   }
 
-  async function closeTabOutDupes() {
+  async function getDuplicateTabsData() {
     const extensionId = chrome.runtime.id;
     const newtabUrl = `chrome-extension://${extensionId}/index.html`;
     const allTabs = await chrome.tabs.query({});
-    const currentWindow = await chrome.windows.getCurrent();
-    const tabOutTabs = allTabs.filter(t => t.url === newtabUrl || t.url === 'chrome://newtab/');
-    if (tabOutTabs.length <= 1) return;
-    const keep = tabOutTabs.find(t => t.active && t.windowId === currentWindow.id)
-              || tabOutTabs.find(t => t.active)
-              || tabOutTabs[0];
-    const toClose = tabOutTabs.filter(t => t.id !== keep.id).map(t => t.id);
-    if (toClose.length) await chrome.tabs.remove(toClose);
-    await fetchOpenTabs();
+    const urlMap = new Map();
+    let dupeCount = 0;
+    
+    // Group tabs by exact URL
+    allTabs.forEach(t => {
+      let url = t.url;
+      if (url === 'chrome://newtab/') url = newtabUrl;
+      if (!url) return;
+      
+      if (!urlMap.has(url)) {
+        urlMap.set(url, []);
+      }
+      urlMap.get(url).push(t);
+    });
+
+    const duplicatesToClose = [];
+    urlMap.forEach(tabs => {
+      if (tabs.length > 1) {
+        dupeCount += (tabs.length - 1);
+        // Keep the active tab if possible, otherwise keep the first one
+        let keep = tabs.find(t => t.active);
+        if (!keep) keep = tabs[0];
+        tabs.forEach(t => {
+          if (t.id !== keep.id) duplicatesToClose.push(t.id);
+        });
+      }
+    });
+
+    return { dupeCount, duplicatesToClose };
+  }
+
+  async function closeTabOutDupes() {
+    const data = await getDuplicateTabsData();
+    if (data.duplicatesToClose.length > 0) {
+      await chrome.tabs.remove(data.duplicatesToClose);
+      await fetchOpenTabs();
+    }
   }
 
   async function getTabOutDupeCount() {
-    const extensionId = chrome.runtime.id;
-    const newtabUrl = `chrome-extension://${extensionId}/index.html`;
-    const allTabs = await chrome.tabs.query({});
-    return allTabs.filter(t => t.url === newtabUrl || t.url === 'chrome://newtab/').length;
+    const data = await getDuplicateTabsData();
+    return data.dupeCount;
   }
 
   // ── UI Helpers ──────────────────────────────────────────────
