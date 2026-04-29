@@ -222,7 +222,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         let headers = { 'Content-Type': 'application/json' };
         
         if (provider === 'gemini') {
-          url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+          url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
           body = {
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: { temperature: 0.3 }
