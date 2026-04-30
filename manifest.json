@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "i know",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "你的浏览器知识中枢 — 采集、管理、导出知识到 Obsidian",
   "permissions": [
     "tabs",
